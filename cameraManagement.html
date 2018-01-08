@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>视频专网GIS平台</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/bootstrap-treeview.min.css">
+    <link rel="stylesheet" href="./css/comment.css">
+    <link rel="stylesheet" href="./js/alert/window.css">
+    <!--引入js文件-->
+    <script type="text/javascript" src="./js/config.js"></script>
+    <script type="text/javascript" src="./js/alert/window.js"></script>
+    <script type="text/javascript" src="./js/localStorageUtils.js"></script>
+    <script type="text/javascript" src="./js/libs/SuperMap.Include.js"></script>
+    <script type="text/javascript" src="./js/libs/jquery-2.2.4.js"></script>
+    <script type="text/javascript" src="./js/libs/jQuery-easing.js"></script>
+    <script type="text/javascript" src="./js/libs/jQuery-jcImgScroll.js"></script>
+    <script type="text/javascript" src="./js/libs/bootstrap.js"></script>
+    <script type="text/javascript" src="./js/libs/bootstrap-treeview.min.js"></script>
+    <script type="text/javascript" src="./js/libs/bootstrap-typeahead.js"></script>
+    <script type="text/javascript" src="./js/tableExport/jquery.table2excel.min.js"></script>
+
+</head>
+<body>
+<!--头部-->
+<div class="header">
+    <div class="text">
+        <img src="./images/logo.png" alt="">
+    </div>
+    <span class="user">
+        <img src="./images/user.png" alt="">
+        <span id="name">name</span>
+    </span>
+    <a href="login.html" class="home">
+        <img src="./images/home.png" alt="">
+        <span>退出登录</span>
+    </a>
+    <div class="h-line"></div>
+</div>
+<!--地图-->
+<div id="map" style="position: absolute;top: 60px; left: 0; right: 0; bottom: 0; width: auto;"></div>
+
+<!--摄像头搜索-->
+<div class="camera-search">
+    <div class="search">
+        <!--输入框-->
+        <input type="text" placeholder="搜索地址信息" autocomplete="off" data-provide="typeahead" id="search">
+        <!--下拉框-->
+        <ul class="nav navbar-nav navbar-nav1" style="border: 1px solid #eee;border-radius:5px 0 0 5px">
+            <li class="dropdown" style="text-align: center;background: white;border-radius: 5px 0 0 5px;">
+                <input id='searchSelect' style="height: 37px;" type="text" value="">
+                <a href="#" class="dropDown_add"
+                   style="padding:10px;background: #fff;font-size:12px;display:inline-block"><span
+                        class="glyphicon glyphicon-cog"></span></a>
+                <a style="padding:10px;display: inline-block;background: #fff" href="#" class="dropdown_self"><strong
+                        class="caret"></strong></a>
+                <ul id="dropDown_a" style="width: 100%;display:none">
+                    <li><a href="#" onclick="numSelect(150)">150m</a></li>
+                    <li><a href="#" onclick="numSelect(200)">200m</a></li>
+                    <li><a href="#" onclick="numSelect(250)">250m</a></li>
+                    <li style="text-align: center;position: relative;"><a style="width: 100%;display: block;" id="box"
+                                                                          href="#" onclick="numSelect(0)">0m </a><span
+                            class="glyphicon glyphicon-cog" id="sum"
+                            style="display:inline-block;position: absolute;right: 14px;top: 14px;"></span></li>
+                </ul>
+            </li>
+        </ul>
+        <!--搜索-->
+        <span class="input-group-btn" aria-hidden="true">
+            <button type="button" class="btn btn-default btn-search" aria-label="Left Align" onclick="searchLocation()">
+                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+            </button>
+        </span>
+        <!--缓冲区距离-->
+        <!--<ul class="nav navbar-nav navbar-nav2">
+            <li class="dropdown" style="text-align: center;background: white;border-radius: 5px;">
+                <input id='hcinput' type="text" placeholder="缓冲区范围为0">
+            </li>
+            <li>
+                <button type="button" class="btn btn-default btn-sure" aria-label="Left Align" style='font-size: 18px;' onclick="hcQuery()">确定</button>
+            </li>
+        </ul>-->
+    </div>
+</div>
+<!--地图操作框-->
+<div class="btnGroupMap">
+    <button class="btn" id="draw" data-toggle="tooltip" onclick="hz()"
+            data-placement="left" title="绘制">
+        <img src="./images/draw.png" alt="绘制">
+    </button>
+
+    <button class="btn" type="button" onclick="dx()" id="point" data-toggle="tooltip"
+            data-placement="left" title="点选">
+        <img src="./images/point.png" alt="点选">
+    </button>
+
+    <button class="btn" onclick="draw()" id="frame" data-toggle="tooltip"
+            data-placement="left" title="框选">
+        <img src="./images/frame.png" alt="框选">
+    </button>
+
+    <button class="btn" onclick="yxx()" id="circle" data-toggle="tooltip"
+            data-placement="left" title="圆形选">
+        <img src="./images/circle.png" alt="圆形选">
+    </button>
+
+    <button class="btn" onclick="dbxx()" id="polygon" data-toggle="tooltip"
+            data-placement="left" title="多边形选">
+        <img src="./images/polygon.png" alt="多边形选">
+    </button>
+
+    <div style="width: 70%;height: 1px;background: #999;margin: 10px 15% 10px 15%"></div>
+
+    <button class="btn" onclick="fd()" id="blowUp" data-toggle="tooltip"
+            data-placement="left" title="放大">
+        <img src="./images/blowUp.png" alt="放大">
+    </button>
+
+    <button class="btn" onclick="sx()" id="shrink" data-toggle="tooltip"
+            data-placement="left" title="缩小">
+        <img src="./images/shrink.png" alt="缩小">
+    </button>
+
+    <button class="btn" onclick="gx()" id="materal" data-toggle="tooltip"
+            data-placement="left" title="全图显示">
+        <img src="./images/materal.png" alt="全图">
+    </button>
+
+    <button class="btn" onclick="cj()" id="cj" data-toggle="tooltip"
+            data-placement="left" title="测距">
+        <img src="./images/ranging.png" alt="测距">
+    </button>
+
+    <button class="btn" onclick="cmj()" id="area" data-toggle="tooltip"
+            data-placement="left" title="面积量测">
+        <img src="./images/area.png" alt="面积量测">
+    </button>
+
+    <button class="btn" onclick="cleans()" id="clear" data-toggle="tooltip"
+            data-placement="left" title="清除">
+        <img src="./images/clear.png" alt="清除">
+    </button>
+</div>
+<!--动态的列表展示-->
+<div id="list_show">
+    <!--图层切换显示-->
+    <button class="camera-list layerList" onclick="$('#layer_list').toggle(changeLayer())">
+        <img src="./images/layer-list.png" alt="">
+    </button>
+    <div class="lists_footer">
+        <div class="dot_1"></div>
+        <ul class="lists_icon">
+            <li class="lists_content list_style" onclick="alerted()">
+                <img src="./images/cam0-photo.png" alt="">
+            </li>
+        </ul>
+        <div class="dot_2"></div>
+    </div>
+    <!--&lt;!&ndash;摄像头列表显示&ndash;&gt;-->
+    <!--<button class="camera-list camList" style="left: 27px;" onclick="$('#cam_list').toggle(changeCameraList())">-->
+    <!--<img src="./images/camera-list.png" alt="">-->
+    <!--</button>-->
+    <!--&lt;!&ndash;汽车列表显示&ndash;&gt;-->
+    <!--<button class="camera-list carList" style="left: 27px;z-index: 2" onclick="$('#car_list').toggle(changeCarList())">-->
+    <!--<img src="./images/policeCar.png" alt="">-->
+    <!--</button>-->
+</div>
+
+<!--全部的详细列表显示内容-->
+
+<div class="list_all" id="cam_list">
+    <div class="cam_header">
+        <span class="list_style">摄像头</span>
+    </div>
+    <!--可变动-->
+    <div class="cam_footer">
+        <div class="list_1 list-show">
+            <div style="margin-left: 22px">
+                <!--<span style="display: inline-block;">摄像头列表</span>-->
+                <span class="Exele" onclick="excel()" style="cursor: pointer;margin-left: 4px">
+             <img src="images/Exele-out.png" style="background-color: rgb(20, 88, 167)"><span>导出</span>
+        </span>
+            </div>
+            <div class="searchCam">
+                <!--下拉框-->
+                <ul class="nav navbar-nav navbar-nav3">
+                    <li class="dropdown"
+                        style="text-align: center;height: 30px;background: white;border-radius: 5px 0 0 5px;border: 1px solid #1458a7">
+                        <a style="padding:0 10px;display: inline-block;" onclick="openCamSettings()"
+                           class="dropdown-toggle"
+                           data-toggle="dropdown"><strong class="caret"></strong></a>
+                        <input id='searchCamSelect' type="text" placeholder="请选择摄像头属性" value="">
+                        <ul class="dropdown-menu" id="menuCamSearch"></ul>
+                    </li>
+                </ul>
+                <!--搜索-->
+                <span class="input-group-btn" aria-hidden="true">
+            <button type="button" class="btn btn-default btn-search" aria-label="Left Align"
+                    onclick="camSearchSettings()">
+                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+            </button>
+        </span>
+            </div>
+            <div id="treeviewCam"
+                 style="overflow-y: scroll;margin-left: 12px;height: 62%;width: 90%;border: 2px solid #1458a7;"></div>
+        </div>
+
+    </div>
+
+</div>
+
+<!--图层信息列表-->
+<div class="layer-list" id="layer_list" style="display: none">
+    <div class="layerContent">
+        <ul>
+            <li class="layerLi" id="LayerAll">
+                <label><input type="checkbox" id="all-layer" checked="checked"
+                              onclick="layerShow(0);"><span></span></label><span class="name">全&nbsp;&nbsp;部</span>
+            </li>
+            <li class="layerLi" id="LayerDefault">
+                <label><input type="checkbox" id="layer" checked="checked"
+                              onclick="layerShow(1);"><span></span></label><span class="name">摄像头</span>
+            </li>
+        </ul>
+    </div>
+</div>
+<!--地图和影像地图的切换-->
+<div class="photoMap" style="cursor:pointer" onclick="changeMap()">
+    <img src="./images/photoMap.png" alt="" id="togPic">
+</div>
+<!--摄像头、汽车属性展示 // todo-->
+<div class=" camType1 camType">
+    <div class="cam_box" style="float: right;">
+    </div>
+</div>
+<div class=" camType2 camType"></div>
+<div class="box" id="camType2">
+    <span class="list drop">摄像头</span>
+</div>
+<!--<div class="camType camType2">-->
+<!--<div class="carTypeList" style="float: right;">-->
+<!--<img src="images/car1.png" alt="">-->
+<!--<span>警车</span>-->
+<!--</div>-->
+<!--</div>-->
+<!--视频播放-->
+<div id="video">
+    <button type="button" id="btnPause" class="btn btn-default btn-ok" aria-label="Left Align">
+        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+    </button>
+    <div class="Vtext" style="display: inline-block">平安里街道-摄像头-17</div>
+    <video controls="controls" id="myVideo"></video>
+</div>
+<!--摄像头详细信息-->
+<div id="cameradetailsWin"
+     style="display:none; position: absolute; bottom:50px; left:25px; width: 27%;height: 60%; background-color: #fff;  border: 1px solid #CDCDB4;box-shadow: 0 3px 16px  #ccc; z-index:1002; padding: 10px 0 20px;">
+    <div id="detailsheader" style="width: 100%;height: 30px;color: gray;line-height: 30px;text-align: center;">
+        摄像头详细信息
+        <div id="cameradetailsWinclose"
+             style="font-size:20px;font-weight:700;line-height:30px;cursor: pointer;float: right;margin-right: 15px;">×
+        </div>
+    </div>
+    <div id="detailscontent"
+         style="width: 90%;height:90%;border: 1px solid #ccc;padding: 10px;margin: 0 10px;color: gray;overflow-y: scroll"></div>
+</div>
+<!--车辆详细信息-->
+<div id="cardetailsWin"
+     style="display:none; position: absolute; bottom:50px; left:25px;width: 25%;height: 75%; background-color: #fff;  border: 1px solid #CDCDB4;box-shadow: 0 3px 16px  #ccc; z-index:1002; padding: 10px 0 20px;">
+    <div id="detailsheaderCar" style="width: 100%;height: 30px;color: gray;line-height: 30px;text-align: center;">
+        车辆详细信息
+        <div id="cardetailsWinclose"
+             style="font-size:20px;font-weight:700;line-height:30px;cursor: pointer;float: right;margin-right: 15px;">×
+        </div>
+    </div>
+    <div id="detailscontentCar"
+         style="width: 90%;height:95%;border: 1px solid #ccc;padding: 10px;margin: 0 10px;color: gray;overflow-y: scroll"></div>
+</div>
+<!--图片信息-->
+<div class="picture" style="display: none">
+    <button type="button" id="pic" class="btn btn-default btn-ok" aria-label="Left Align"
+            onclick="$('.picture').hide()">
+        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+    </button>
+    <!--轮播图-->
+    <div id="pic-content" class="jcImgScroll">
+        <ul>
+            <li><a href="#" path="images/01.jpg"></a></li>
+            <li><a href="#" path="images/02.jpg"></a></li>
+            <li><a href="#" path="images/03.jpg"></a></li>
+            <li><a href="#" path="images/04.jpg"></a></li>
+            <li><a href="#" path="images/05.jpg"></a></li>
+            <li><a href="#" path="images/06.jpg"></a></li>
+            <li><a href="#" path="images/07.jpg"></a></li>
+            <li><a href="#" path="images/08.jpg"></a></li>
+            <li><a href="#" path="images/09.jpg"></a></li>
+        </ul>
+    </div>
+</div>
+<!--信息采集-->
+<div id="message" style="display: none">
+    <div class="message" style="display: block">
+        <h4 class="meg-title">任务采集单</h4>
+        <p class="meg">摄像头名称：<input type="text" id="camera_name" placeholder="请输入摄像头名称"></p>
+        <p class="meg">摄像头位置：<input type="text" id="camera_addr" placeholder="请输入摄像头位置"></p>
+        <p class="meg">派发给：
+            <select name="mobileUsers" id="mobileUsers" class="form-control" style="padding:0 !important"></select>
+        </p>
+        <p class="meg">采集描述:</p>
+        <textarea class="meg-describe" id="meg-describe" placeholder="摄像头周边环境，摄像头高度"></textarea>
+        <button class="btn btn-sure1" onclick="sendManage()">发送</button>
+        <div class="chacha" onclick="$('#message').hide()">
+            <i class="glyphicon glyphicon-remove"></i>
+        </div>
+    </div>
+</div>
+<!--需要导出的摄像头表格-->
+<div id="excelDiv">
+    <div class="tableHearder">
+        <h3>摄像头列表</h3>
+        <button type="button" class="btn btn-default btn-excel" aria-label="Left Align" onclick="excelOff()">
+            取消
+        </button>
+        <button type="button" class="btn btn-default btn-excel" aria-label="Left Align" onclick="excelOut()">
+            导出
+        </button>
+    </div>
+    <table class="table table-bordered table-hover" id="sxtlb_tab" border="1">
+        <thead>
+        <tr id='sxtHead'></tr>
+        </thead>
+    </table>
+</div>
+<!--需要导出的摄像头外的其他表格-->
+
+
+<div id="excelDivOther">
+    <div class="tableHearder">
+        <h3>车辆列表</h3>
+        <button type="button" class="btn btn-default btn-excel" aria-label="Left Align" onclick="excelOffCar()">
+            取消
+        </button>
+        <button type="button" class="btn btn-default btn-excel" aria-label="Left Align" onclick="excelOutCar()">
+            导出
+        </button>
+    </div>
+    <table class="table table-bordered table-hover" id="sxtlb_tabCar" border="1">
+        <thead>
+        <tr id='sxtHeadCar'></tr>
+        </thead>
+    </table>
+</div>
+<div class="footer">
+    <span>&copy;&nbsp;&nbsp;北京市公安局西城分局</span>
+</div>
+</body>
+<!--tips展现-->
+<script type="text/javascript">
+    $(function () {
+        $("[data-toggle='tooltip']").tooltip();
+        $('.tooltip').css('left', '-65px');
+    });
+</script>
+<!--修改样式-->
+<script type="text/javascript" src="./js/styleChange.js"></script>
+<!--地图查询操作及基础操作-->
+<script type="text/javascript" src="./js/mapTools.js"></script>
+<!--摄像头操作-->
+<script type="text/javascript" src="./js/cameraOperations.js"></script>
+<!--警车操作-->
+<script type="text/javascript" src="./js/carOperations.js"></script>
+<!--摄像头查询-->
+<script type="text/javascript" src="./js/commonFeature.js"></script>
+<!--地图加载操作-->
+<script type="text/javascript" src="./js/mapLayerChange.js"></script>
+<!--其他操作-->
+<script type="text/javascript" src="./js/common.js"></script>
+<!--缓冲区-->
+<script type="text/javascript" src="./js/bufferService.js"></script>
+</html>

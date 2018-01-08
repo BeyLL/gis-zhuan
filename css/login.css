@@ -1,0 +1,154 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+html,body{
+    height: 100%;
+}
+body{
+    background: url("../images/bg.png") no-repeat;
+    background-size: 100% 100%;
+    overflow: hidden;
+}
+.login{
+    position: relative;/*应该是这里的问题*/
+    top: 32%;
+    text-align: center;
+}
+.login .box input{
+	vertical-align: top;
+    display: inline;
+    width: 17px;
+    height: 17px;
+    background: #f9f9f9 ;
+    color: #1458a7;
+    font-size: 14px;
+    text-indent: 10px;
+}
+.login input:focus{
+    outline: none;
+    background: rgba(250, 250, 250, .7);
+    color: #4e8af2;
+}
+.login span{
+    font-size: 12px;
+    display: inline-block;
+    left: 35px;
+    margin-left: 10px;
+    color: white;
+}
+.login span:focus{
+    color: #4e8af2;
+}
+.password-img{
+    width: 14px;
+    height: 16px;
+}
+.password-img img{
+    width: 14px;
+    height: 16px;
+    position: relative;
+    left: 35px;
+    top: 0;
+}
+/*.login p{*/
+    /*display: inline-block;*/
+    /*margin: 50px 10px 36px 35px;*/
+    /*font-size: 16px;*/
+    /*color: #1458a7;*/
+/*}*/
+.username{
+    margin: 5% 0 0 63.5%;
+    width: 20%;
+    background: url('../images/username.png') no-repeat 13px center;
+    border-radius: 5px;
+    border: 1px solid #6393c8;
+    text-align: right;
+    height: 33px;
+}
+.username input{
+	width: 86%;
+	height: 100%;
+	background: none;
+	border-left: 1px solid #6393c8;
+	border-bottom: none;
+	border-right: none;
+	border-top: none;
+	color: #fff;
+	padding-left: 10px;
+}
+.password{
+    margin: 1% 0 0 63.5%;
+    width: 20%;
+    height: 33px;
+    background: url('../images/password.png') no-repeat 13px center;
+    border-radius: 5px;
+    border: 1px solid #6393c8;
+    text-align: right;
+}
+.password input{
+	width: 86%;
+	height: 100%;
+	background: none;
+	border-left: 1px solid #6393c8;
+	border-bottom: none;
+	border-right: none;
+	border-top: none;
+	color: #fff;
+	padding-left: 10px;
+}
+input::-webkit-input-placeholder{
+    color: #fff;
+}
+.box{
+    width: 20%;
+    margin: 1% 0 0 55.5%;
+}
+.btn{
+    width: 10%;
+    height: 40px;
+    margin:20px 36px 40px 42px;
+}
+.btn-login{
+    width: 20%;
+    margin: 2% 0 0 47%;
+    height: 33px;
+    padding: 0;
+}
+@media screen and  (max-width: 1366px){
+    .login{
+        /*top:30%;*/
+    }
+    .login .btn-login{
+        margin: 1.5% 0 0 47%;
+    }
+    .login .box{
+        width: 20%;
+        margin: 1% 0 0 55.8%;
+    }
+}
+@media screen and  (max-width: 1024px){
+    .login{
+        top:29%;
+    }
+    .login .username {
+        margin: 7% 0 0 63.5%;
+    }
+    .login .username input{
+        width: 80%;
+    }
+    .login .password {
+        margin: 2% 0 0 63.5%;
+    }
+    .login .password input{
+        width: 80%;
+    }
+    .login .box{
+        width: 20%;
+        margin: 1% 0 0 57.2%;
+    }
+    .login .btn-login{
+        width: 20%;
+        margin: 1.5% 0 0 47%;
+    }
+}

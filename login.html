@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv=”x-ua-compatible” content=”ie=9″ />
+    <title>用户登录</title>
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <link rel="stylesheet" href="./js/alert/window.css">
+    <link rel="stylesheet" href="./css/login.css">
+    <script type="text/javascript" src="./js/config.js"></script>
+    <script type="text/javascript" src="./js/localStorageUtils.js"></script>
+    <script type="text/javascript" src="./js/alert/window.js"></script>
+    <script type="text/javascript" src="./js/libs/jquery-2.2.4.js"></script>
+    <script type="text/javascript" src="./js/libs/bootstrap.js"></script>
+    <script type="text/javascript" src="js/libs/jquery.cookie.js"></script>
+</head>
+<body>
+<!--登录-->
+<div class="login">
+        <div class="username">
+            <input type="text" placeholder="用户名" id="mobile" autocomplete="on">
+        </div>
+        <div class="password">
+            <input type="password" placeholder="密码" id="password">
+        </div>
+        <img class="btn btn-login" src="images/denglu.png" />
+        <div class="box">
+            <input type="checkbox" id="removePass"><span style="">记住密码</span>
+        </div>
+    </div>
+</body>
+<script type='text/javascript'>
+    $(function () {
+		if($.cookie('password')!='null'){
+			$('#mobile').val($.cookie('mobile'));
+			$('#password').val($.cookie('password'));
+			var username = $.cookie('mobile');
+ 			var password = $.cookie('password');
+			if(username != null && username != '' && password != null && password != ''){
+				//选中保存秘密的复选框
+			  	$("#removePass").attr('checked',true);
+			}
+			
+		}else{
+			 $('#mobile').val($.cookie('mobile'));
+			 $("#removePass").attr('checked',false);
+		}
+		//发送请求
+		 $('.btn-login').click(function () {
+            if ($("#mobile").val() == ""){
+                win.alert('提示','用户名/密码不能为空');
+                return
+            }
+            if ($("#password").val() == ""){
+                win.alert('提示','用户名/密码不能为空');
+                return
+            }
+            var loginData = {
+                "password": $('#password').val(),
+                "mobile": $('#mobile').val()
+            };
+            if(document.getElementById("removePass").checked){
+            	//expires设置天数为1天
+		       $.cookie('mobile', loginData.mobile, { expires: 1});
+		       $.cookie('password', loginData.password, { expires: 1 });
+		    }else{
+		    	//不记住密码
+		    	// $.cookie('mobile', null); 
+		    	$.cookie('mobile', loginData.mobile, { expires: 1 });
+		    	$.cookie('password', null); 
+		    }
+            $.ajax({
+                type: 'POST',
+                url: urlName + '/user/login',
+                data: loginData,
+                dataType: 'json',
+                success: function (res) {
+                    if (res.code === 200) {
+                        saveData('USER_KEY', res.data);
+                        window.location.href = "cameraManagement.html";
+                    } else {
+                        win.alert('提示','用户名或密码输入错误，请重新输入');
+                    }
+                },
+                error: function () {
+                    win.alert('提示','网络错误，请重新输入');
+                }
+            })
+        });
+    });
+</script>
+</html>
